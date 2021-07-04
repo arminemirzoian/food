@@ -99,12 +99,15 @@ setClock('.timer', deadline);
             modalCloseBtn = modal.querySelector('[data-close]');
 
     modalTrigger.forEach(btn => {
-        btn.addEventListener('click', () => {
-            modal.classList.add('show');
-            modal.classList.remove('hide');
-            document.body.style.overflow = "hidden";
-        });
+        btn.addEventListener('click', openModal);
     });
+
+    function openModal() {
+        modal.classList.add('show');
+        modal.classList.remove('hide');
+        document.body.style.overflow = "hidden";
+        clearInterval(modalTimerId);
+    }
     
     function closeModal() {
         modal.classList.add('hide');
@@ -125,6 +128,16 @@ setClock('.timer', deadline);
             closeModal();
         }
     });
+
+    const modalTimerId = setTimeout(openModal, 3000);
+
+    function showModalByScroll (){
+        if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+            openModal();
+            window.removeEventListener('scroll', showModalByScroll);
+        }
+    } 
+    window.addEventListener('scroll', showModalByScroll);
 });
 
 
