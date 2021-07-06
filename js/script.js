@@ -42,7 +42,7 @@ tabsParent.addEventListener("click", (event) => {
 });
 
 //Timer
-const deadline = '2021-07-11';
+const deadline = '2021-11-11';
 
 function getTimeRemaining (endtime) {
     const t = Date.parse(endtime) - Date.parse(new Date()), // կստանանք միլիվայրկյանների տարբերությունը
@@ -132,7 +132,7 @@ setClock('.timer', deadline);
         }
     });
 
-    // const modalTimerId = setTimeout(openModal, 3000);
+    const modalTimerId = setTimeout(openModal, 300000);
 
     function showModalByScroll (){
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -206,132 +206,54 @@ setClock('.timer', deadline);
         12,
         ".menu .container"
     ).render();
+
+    // Forms
+
+    const forms = document.querySelectorAll('form');
+    const message = {
+        loading: 'Загрузка...',
+        success: 'Спасибо! Скоро мы с вами свяжемся',
+        failure: 'Что-то пошло не так...'
+    };
+
+    forms.forEach(item => {
+        postData(item);
+    });
+
+    function postData(form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            let statusMessage = document.createElement('div');
+            statusMessage.classList.add('status');
+            statusMessage.textContent = message.loading;
+            form.appendChild(statusMessage);
+        
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+            const formData = new FormData(form);
+
+            const object = {};
+            formData.forEach(function(value, key){
+                object[key] = value;
+            });
+            const json = JSON.stringify(object);
+
+            request.send(json);
+
+            request.addEventListener('load', () => {
+                if (request.status === 200) {
+                    console.log(request.response);
+                    statusMessage.textContent = message.success;
+                    form.reset();
+                    setTimeout(() => {
+                        statusMessage.remove();
+                    }, 2000);
+                } else {
+                    statusMessage.textContent = message.failure;
+                }
+            });
+        });
+    }
 });
-
-
-// Constructors
-
-// function User(name, id) {
-//     this.name = name;
-//     this.id = id;
-//     this.human = true;
-//     this.hello = function () {
-//         console.log(`Hello ${this.name}`);
-//     }
-// }
-
-// const ivan = new User('Ivan', 24);
-// const alex = new User('Alex', 26); // ստացանք նոր օբյեկտ նշված հատկանիշներով
-// console.log(ivan); // User { name: 'Ivan', id: 24, human: true, hello: [Function (anonymous)] }
-// ivan.hello();
-
-// User.prototype.exit = function() {
-//     console.log(`User ${this.name} left`); // ստեղծումա նոր մեթոդ ընդհանուր User-ում
-// }
-
-// ivan.exit();
-
-// սովորական ֆունկցիայի դեպքում this == window, use strict-ի դեպքում undefined
-// օբյեկտի մեթոդի կոնտեքսը հենց օբյեկտն է։ Եթե օբյեկտի մեթոդի մեջ ֆունկցիա ենք կանչում, ապա այդ ֆունկցիայի this-ը կլինի undefined, իսկ մեթոդի դեպքում օբյեկտը
-// constructor-ում և class-երում նշված this-ը նոր օբյեկտի օրինակն է
-// ձեռքով կպցնում ենք this-ը call, apply, bind-ի միջոցով
-
-// function showThis (a, b){
-// function sum() {
-//     return this.a + this.b; // undefined, պետք է գրել առանց this-ի, որ ծնողից վերցնի և ցույց տա 9
-// }
-// }
-
-// showThis(4, 5);
-
-// const obj = {
-//     a: 20,
-//     b: 30,
-//     sum: function() {
-//         console.log(this);
-//     }
-// };
-
-// obj.sum(); //{ a: 20, b: 30, sum: [Function: sum] }
-
-// function sayName () {
-//     console.log(this);
-//     console.log(this.name);
-// }
-
-// const user = {
-//     name: 'John'
-// }
-// sayName.call(user);
-// sayName.apply(user); // { name: 'John' } John
-
-
-// function sayName (surname) {
-//     console.log(this);
-//     console.log(this.name + surname);
-// }
-// const user = {
-//     name: 'John'
-// }
-// sayName.call(user, "Smith");
-// sayName.apply(user, ['Smith']); // { name: 'John' } JohnSmith
-
-// function count(num) {
-//     return this *num;
-// }
-
-// const double = count.bind(2); // գրեցինք դաբլ ֆունկցիան, որը ստացավ 2, որը count-ի this-ն է
-// console.log(double(3)); // 6
-
-// btn.addEventListener('click', function () {
-//     console.log(this); // կբերի button-ը սովորական նշված ֆունկցիայի դեպքում, այստեղ this-ը նույննա, ինչ event.target-ը
-// });
-// btn.addEventListener('click', () => {
-//     console.log(this); // կբերի undefined, որովհետև aroow function-ը չունի իր կոնտեքստի կանչը
-// });
-
-// const obj = {
-//     num: 5,
-//     sayNumber: function () {
-//         const say = () => {
-//             console.log(this);
-//         };
-//         say();
-//     }
-// };
-
-// obj.sayNumber(); //{ num: 5, sayNumber: [Function: sayNumber] } arrow function-ները չունեն իրենց կոնտեքստի կանչը, վերցնում է իր ծնողի կոնտեքստը
-
-// const double = a => a * 2;
-// console.log(double(4)); //8
-
-// Class
-// class Rectangle {
-//     constructor (height, width){
-//         this.height = height;
-//         this.width = width;
-//     }
-//     calcArea() { // method
-//         return this.height * this.width;
-//     }
-// }
-
-// class ColoredRectangleWithText extends Rectangle{
-//     constructor(height, width, text, bgColor) {
-//         super(height, width);
-//         this.text = text;
-//         this.bgColor = bgColor;
-
-// }
-// showMyProps() {
-//     console.log(`Text: ${this.text}, color: ${this.bgColor}`);
-// }
-// }
-
-// const div = new ColoredRectangleWithText(10, 20, "Hello", "red");
-// div.showMyProps(); // Text: Hello, color: red
-// console.log(div.calcArea()); //200
-
-// const square = new Rectangle(5, 4);
-// console.log(square.calcArea()); // 20
-
