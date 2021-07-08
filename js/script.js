@@ -3,8 +3,8 @@
 window.addEventListener('DOMContentLoaded', function() {
 
     //Tabs
-    
-const tabs = document.querySelectorAll(".tabheader__item");
+
+let tabs = document.querySelectorAll(".tabheader__item");
 const tabsContent = document.querySelectorAll(".tabcontent");
 const tabsParent = document.querySelector(".tabheader__items");
 
@@ -13,7 +13,7 @@ function hideTabContent() {
         item.classList.add("hide");
         item.classList.remove("show", "fade");
     });
-    
+
     tabs.forEach((item) => {
         item.classList.remove("tabheader__item_active");
     });
@@ -28,14 +28,14 @@ function showTabContent(i = 0) {
 hideTabContent();
 showTabContent();
 
-tabsParent.addEventListener("click", (event) => {
+tabsParent.addEventListener("click", function (event) {
     const target = event.target;
 
     if (target && target.classList.contains("tabheader__item")) {
         tabs.forEach((item, i) => {
                 if (target == item) {
                     hideTabContent();
-                    showTabContent(i);  
+                    showTabContent(i);
                 }
         });
     }
@@ -93,25 +93,23 @@ updateClock();
 
 setClock('.timer', deadline);
 
-// Modal 
+// Modal
 
     const modalTrigger = document.querySelectorAll('[data-modal]'),
             modal = document.querySelector('.modal');
 
-    
+
     function openModal() {
         modal.classList.add('show');
         modal.classList.remove('hide');
         document.body.style.overflow = "hidden";
         clearInterval(modalTimerId);
     }
-    
+
     modalTrigger.forEach(btn => {
         btn.addEventListener('click', openModal);
     });
 
-    
-    
     function closeModal() {
         modal.classList.add('hide');
         modal.classList.remove('show');
@@ -137,7 +135,7 @@ setClock('.timer', deadline);
             openModal();
             window.removeEventListener('scroll', showModalByScroll);
         }
-    } 
+    }
     window.addEventListener('scroll', showModalByScroll);
 
     //Menu, classes for menu cards
@@ -165,7 +163,7 @@ setClock('.timer', deadline);
             } else {
                 this.classes.forEach( i => element.classList.add(i));
             }
-            element.innerHTML = `      
+            element.innerHTML = `
                 <img src=${this.src} alt=${this.alt}>
                 <h3 class="menu__item-subtitle">${this.title}</h3>
                 <div class="menu__item-descr">${this.descr}</div>
@@ -227,43 +225,44 @@ setClock('.timer', deadline);
             statusMessage.style.cssText = ` display: block;
             margin: 0 auto; `;
             form.insertAdjacentElement('afterend', statusMessage);
-        
-            const request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
-            request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+            
             const formData = new FormData(form);
 
             const object = {};
             formData.forEach(function(value, key){
                 object[key] = value;
             });
-            const json = JSON.stringify(object);
+            
 
-            request.send(json);
-
-            request.addEventListener('load', () => {
-                if (request.status === 200) {
-                    console.log(request.response);
-                    showThanksModal(message.success);
-                    form.reset();
-                    statusMessage.remove();
-                } else {
-                    showThanksModal(message.failure);
-                }
+            fetch('server.php', {
+                method: "POST",
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(object)
+            }).then(data => data.text()).then(data => {
+                console.log(data);
+                showThanksModal(message.success);
+                statusMessage.remove();
+            }).catch(() => {
+                showThanksModal(message.failure);
+            }).finally(() => {
+                form.reset();
             });
+
         });
     }
 
-    //Modal window 
+    //Modal window
 
     function showThanksModal(message) {
-      const prevModalDialog = document.querySelector('.modal__dialog');  
-      
+      const prevModalDialog = document.querySelector('.modal__dialog');
+
       prevModalDialog.classList.add('hide');
       openModal();
 
       const thanksModal = document.createElement('div');
-      
+
       thanksModal.classList.add('modal__dialog');
       thanksModal.innerHTML = `<div class="modal__content">
                     <div class="modal__close" data-close>×</div>
@@ -271,7 +270,7 @@ setClock('.timer', deadline);
             </div> `;
 
       document.querySelector('.modal').append(thanksModal);
-      
+
       setTimeout(() => {
         thanksModal.remove();
         prevModalDialog.classList.add('show');
@@ -279,5 +278,20 @@ setClock('.timer', deadline);
         closeModal();
       }, 4000);
     }
+// API
+
+// fetch('https://jsonplaceholder.typicode.com/posts', {
+//     method: "POST",
+//     body: JSON.stringify({name: 'Alex'}),
+//     headers: {
+//         'Content-type': 'application/json'
+//     }
+// }).then(response => response.json()).then(json => console.log(json));
+
+fetch('db.json')
+        .then(data => data.json())
+        .then(res => console.log(res));
+
 
 });
+
