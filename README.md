@@ -1,4 +1,4 @@
-# food
+# Food
 ## The aim of this project is to use most popular tools and modules which appear in JavaScript.
 ### In this project we used HTML, CSS, JavaScript and PHP for posting and getting data to/from the server.
 
