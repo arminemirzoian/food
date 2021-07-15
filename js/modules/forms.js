@@ -1,7 +1,10 @@
-function forms() {
+import {closeModal, openModal} from './modal';
+import {postData} from '../services/services';
+
+function forms(formSelector, modalTimerId) {
 // Forms
 
-const forms = document.querySelectorAll('form');
+const forms = document.querySelectorAll(formSelector);
 const message = {
     loading: 'img/form/spinner.svg',
     success: 'Спасибо! Скоро мы с вами свяжемся',
@@ -12,16 +15,7 @@ forms.forEach(item => {
     bindpostData(item);
 });
 
-const postData = async (url, data) => {
-const res = await fetch(url, {
-    method: "POST",
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: data
-});
-return await res.json();
-};
+
 
 function bindpostData(form) {
     form.addEventListener('submit', (e) => {
@@ -50,6 +44,45 @@ function bindpostData(form) {
 
     });
 }
-}
 
-module.exports = forms;
+//Modal window
+
+function showThanksModal(message) {
+    const prevModalDialog = document.querySelector('.modal__dialog');
+    
+    prevModalDialog.classList.add('hide');
+    openModal('.modal', modalTimerId);
+    
+    const thanksModal = document.createElement('div');
+    
+    thanksModal.classList.add('modal__dialog');
+    thanksModal.innerHTML = `<div class="modal__content">
+            <div class="modal__close" data-close>×</div>
+            <div class="modal__title">${message}</div>
+    </div> `;
+    
+    document.querySelector('.modal').append(thanksModal);
+    
+    setTimeout(() => {
+        thanksModal.remove();
+        prevModalDialog.classList.add('show');
+        prevModalDialog.classList.remove('hide');
+        closeModal('.modal');
+        }, 4000);
+    }
+    // API
+    
+    // fetch('https://jsonplaceholder.typicode.com/posts', {
+    //     method: "POST",
+    //     body: JSON.stringify({name: 'Alex'}),
+    //     headers: {
+    //         'Content-type': 'application/json'
+    //     }
+    // }).then(response => response.json()).then(json => console.log(json));
+    
+    fetch("http://localhost:3000/menu")
+    .then(data => data.json())
+    .then(res => console.log(res));
+    
+    }
+export default forms;

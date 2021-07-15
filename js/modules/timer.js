@@ -1,6 +1,4 @@
-function timer() {
-//Timer
-const deadline = '2021-11-11';
+function timer(id, deadline) {
 
 function getTimeRemaining (endtime) {
     const t = Date.parse(endtime) - Date.parse(new Date()), // կստանանք միլիվայրկյանների տարբերությունը
@@ -19,8 +17,8 @@ function getTimeRemaining (endtime) {
 }
 
 function getZero (num) {
-    if (num >= 0 && num <= 10) {
-        return `0${num}`;
+    if (num >= 0 && num < 10) {
+        return '0' + num;
     } else {
         return num;
     }
@@ -49,7 +47,7 @@ updateClock();
     }
 }
 
-setClock('.timer', deadline);
+setClock(id, deadline);
 }
 
-module.exports = timer;
+export default timer;
